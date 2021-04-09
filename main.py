@@ -234,7 +234,7 @@ def output_nlp(Json_data, tokn, Pos, Ner, Parse, Dep_parse):
     tree.reverse()
     parse_print = '\n'.join(tree)
     parse_print = re.sub("_", "-", parse_print)
-    return "NLP Parse: \n{}".format(parse_print)
+    return "NLP Parse(sentence structure): \n{}".format(parse_print)
 
     
 if __name__ == "__main__":
