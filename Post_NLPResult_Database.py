@@ -17,6 +17,13 @@ from json2html import *
 
 from collections import defaultdict
 
+from nltk.tree import ParentedTree
+from nltk.treeprettyprinter import TreePrettyPrinter
+import re
+
+import pandas as pd
+from tabulate import tabulate
+
 
 
 app = dash.Dash(__name__)   #external_stylesheets=[dbc.themes.SUPERHERO]
@@ -64,7 +71,8 @@ app.layout = html.Div([
     dbc.Row([dbc.Col(graph_card, width=8)], justify="around"),
     
     dcc.ConfirmDialogProvider( html.Button('Submit to sNLP', style={"height": "auto", "margin-left": 314}),id='submit_button'), #message='Danger danger! Are you sure you want to continue?'
-    dbc.Row([html.Div(id='textoutput', style={'whiteSpace': 'pre-line','margin-left': 320})])
+   # dbc.Row([html.Div(id='textoutput', style={'whiteSpace': 'pre-line','margin-left': 320, 'width': '1000px', 'display' : "inline-block !important"})])
+    html.Div(id='textoutput', style={'whiteSpace': 'pre', 'margin-left': 320, 'width': '1000px', "font-family": "monospace"})
 ])
 
 
@@ -177,22 +185,53 @@ def text_output(submit_n_clicks,value, name, email, phone):
 
 
         
-        #return "submitted {} times; user info: [ Name: {} | Email: {} | Phone Number: {} ]".format(submit_n_clicks, name, email, phone)
+        df_nested_list = pd.json_normalize(Json_data)
+        df_nested_Sen = pd.json_normalize(Json_data, record_path = ["sentences"])
+        df_nested_3 = df_nested_Sen.iloc[:, 0:2]
+        df_nested_basic = df_nested_Sen.iloc[:, 2:3]
+        df_nested_enhanced = df_nested_Sen.iloc[:, 3:4]
+        df_nested_enhancedPP = df_nested_Sen.iloc[:, 4:5]
+        df_nested_entity = df_nested_Sen.iloc[:, 5:6]
+        df_nested_tokens = df_nested_Sen.iloc[:, 6:7]
+        df_nested_basic['basicDependencies'] = df_nested_basic['basicDependencies'].astype('str').str.replace('},','}\n')
+        df_nested_enhanced['enhancedDependencies'] = df_nested_enhanced['enhancedDependencies'].astype('str').str.replace('},','}\n')
+        df_nested_enhancedPP['enhancedPlusPlusDependencies'] = df_nested_enhancedPP['enhancedPlusPlusDependencies'].astype('str').str.replace('},','}\n')
+        df_nested_entity['entitymentions'] = df_nested_entity['entitymentions'].astype('str').str.replace('},','}\n')
+        df_nested_tokens['tokens'] = df_nested_tokens['tokens'].astype('str').str.replace('},','}\n')
+        
+        return [output_nlp(Json_data, tokn, Pos, Ner, Parse, Dep_parse), tabulate(df_nested_3, headers='keys', tablefmt='psql'),
+                tabulate(df_nested_basic, headers='keys', tablefmt='psql'), tabulate(df_nested_enhanced, headers='keys', tablefmt='psql'),
+                tabulate(df_nested_enhancedPP, headers='keys', tablefmt='psql'),
+                tabulate(df_nested_entity, headers='keys', tablefmt='psql'), tabulate(df_nested_tokens, headers='keys', tablefmt='psql')]
 
-        # Convert the JSON result in a tabular format with HTML tags
-        jsontohtml = json2html.convert(json = Json_data);
+        # # Convert the JSON result in a tabular format with HTML tags
+        # jsontohtml = json2html.convert(json = Json_data);
 
-        #---------------Will expand this code to add more complex tasks --------------------
-        # Display the HTML code in a new browser
-        import webbrowser
-        f = open('JSONResult.html','w')
-        f.write(jsontohtml)
-        f.close()
+        # #---------------Will expand this code to add more complex tasks --------------------
+        # # Display the HTML code in a new browser
+        # import webbrowser
+        # f = open('JSONResult.html','w')
+        # f.write(jsontohtml)
+        # f.close()
 
-        webbrowser.open_new_tab('JSONResult.html')
-        #---------------Will expand this code to add more complex tasks --------------------
+        # webbrowser.open_new_tab('JSONResult.html')
+        # #---------------Will expand this code to add more complex tasks --------------------
         
 
+# def output_nlp(Json_data, tokn, Pos, Ner, Parse, Dep_parse):
+#     parse_tree = ParentedTree.fromstring(Parse)
+#     parse_tree.pretty_print()
+#     return "NLP Parse: \n {}".format(Parse)
+
+def output_nlp(Json_data, tokn, Pos, Ner, Parse, Dep_parse):
+    parse_tree = ParentedTree.fromstring(Parse)
+    pretty_tree = TreePrettyPrinter(parse_tree).text()
+    tree = pretty_tree.split("\n")
+    tree.reverse()
+    parse_print = '\n'.join(tree)
+    parse_print = re.sub("_", "-", parse_print)
+    return "NLP Parse(sentence structure): \n{}".format(parse_print)
+    
 if __name__ == "__main__":
 
     app.run_server(debug=False)
