@@ -1,0 +1,66 @@
+# Putty ----------------------------------------------------------------------------------------------              
+server:   66.76.242.194 
+
+ambekarakhil --> username
+ambekarakhil1995! --> password
+passwd is the command to change you password.
+
+#MySQL-------------------------------------------------------------------------------------------------
+there is a mysql account for your user and a database named ambekarakhil
+That should be visible  to you in the shell.
+Command to connect to MySQL: mysql -u ambekarakhil -p
+The mysql password will be ambadmin21@!
+
+
+
+Spreadsheet: 
+
+https://docs.google.com/spreadsheets/d/1i9K8ZOVtJWyNyCujzLSRTQr475QSTycyW9TnEf_6fkQ/edit?usp=sharing
+
+NLP Parser Details:
+https://docs.google.com/document/d/1VQAHO9XcpIwAHoM36hdiXSkC5_vj48YgtGBoViFe-Ss/edit?usp=sharing
+
+# MySQL alternative--------------------------------------------------------------------------------------
+user name: zou and your password is iamzou21@! 66.76.242.194/phpmyadmin  should work to make databases.
+
+# MySQL table Schema-------------------------------------------------------------------------------------
+
+CREATE TABLE verus0302c (count int, teacher char(30), assertion char(250), nlp json, linkages varchar(500));
+
+CREATE TABLE verus0302c (count int, teacher char(30), assertion char(250), nlp json, linkages varchar(500), inputSen varchar(1000));
+
+
+# App deployment on Linux Machine --------------------------------------------------------------------------
+Create virtual enviornmnt: virtualenv venv
+Activate: source venv/bin/activate
+Deactivate: deactivate
+
+URL: http://66.76.242.194:8001/
+Test if the app is running correctly --> uwsgi --socket 66.76.242.194:8001 --protocol=http -w wsgi
+Run the above command from ise directory
+
+Install Modules: sudo apt install python3-<PackageName> or pip install <PackageName>
+
+GitClone: https://github.com/akhilambekar/2021A.git --> ise (i.e intelligent search engine)
+
+# Deploy app on the web server------------------------------------------------------------------------------
+Run the uwgsi (webserver gateway interface) forever: i.e run it as a process --> Steps Below
+1. acivate virtual enviornment
+2. change directory to ise
+3. nohup uwsgi --socket 66.76.242.194:8001 --protocol=http -w wsgi > out.log &
+4. Process id: 780009 --> check status ps --> Kill <ProcessID>
+5. deactivate
+
+
+Automatic Git Pull every 30 minutes: https://stackoverflow.com/questions/44523994/cron-job-for-git-pull
+Create Cron Job:  sudo crontab -u ambekarakhil -e
+List Cron  Jobs:  sudo crontab -u ambekarakhil -l
+
+git push: Git push origin <branchname>
+
+
+chsh -s /bin/bash
+chsh -s /bin/zsh
+sudo pkill -f uwsgi -9
+
+
