@@ -90,6 +90,8 @@ def text_output(submit_n_clicks,value, name, email, phone):
     
     else:
         sen_check = re.split(r'[.!?]+', value)
+        if sen_check[-1]=='':
+            sen_check.pop()
         if len(sen_check) > 1:
             return "Please only enter one sentence!"
 

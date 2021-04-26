@@ -48,7 +48,7 @@ Run the uwgsi (webserver gateway interface) forever: i.e run it as a process -->
 1. acivate virtual enviornment
 2. change directory to ise
 3. nohup uwsgi --socket 66.76.242.194:8001 --protocol=http -w wsgi > out.log &
-4. Process id: 780009 --> check status ps --> Kill <ProcessID>
+4. Process id: 969492-> check status ps --> Kill <ProcessID>
 5. deactivate
 
 
